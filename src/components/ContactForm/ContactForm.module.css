@@ -7,6 +7,8 @@
   border: 1px solid #000;
   border-radius: 8px;
   margin-bottom: 20px;
+  background: rgb(131,58,180);
+  background: radial-gradient(circle, rgba(131,58,180,1) 0%, rgba(190,29,253,0.08727240896358546) 56%, rgba(232,187,233,1) 100%);
 }
 
 .input {

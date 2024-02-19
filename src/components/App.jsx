@@ -1,47 +1,18 @@
-import { useState, useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
+import Title from './Titile/Title';
+import Layout from './Layout/Layout';
+import ContactForm from './ContactForm/ContactForm';
+import SearchBox from './SearchBox/SearchBox';
+import ContactList from './ContactList/ContactList';
 
-import { ContactForm } from './ContactForm/ContactForm';
-import { SearchBox } from './SearchBox/SearchBox';
-import { ContactList } from './ContactList/ContactList';
-
-import { search } from '../helpers/searchBy';
-import { load, save } from '../helpers/localStorage';
-
-import css from './App.module.css';
-
-const getInitialContacts = () => {
-  const savedContacts = load('saved-contacts');
-  return savedContacts ? savedContacts : [];
-};
-
-export const App = () => {
-  const [inputValue, setInputValue] = useState('');
-  const [contactList, setContactList] = useState(getInitialContacts);
-
-  useEffect(() => {
-    save('saved-contacts', contactList);
-  }, [contactList]);
-
-  const addContact = newContact => {
-    setContactList(currContacts => {
-      return [...currContacts, newContact];
-    });
-  };
-
-  const deleteContact = userId => {
-    setContactList(currContacts => {
-      return currContacts.filter(contact => contact.id !== userId);
-    });
-  };
-
-  const searchResult = search(contactList, inputValue);
-
+export default function App() {
   return (
-    <div className={css.container}>
-      <h1 className={css.title}>Phonebook</h1>
-      <ContactForm onAdd={addContact} />
-      <SearchBox value={inputValue} onChange={setInputValue} />
-      <ContactList contactList={searchResult} onDelete={deleteContact} />
-    </div>
+    <Layout>
+      <Title>Phonebook</Title>
+      <ContactForm />
+      <SearchBox />
+      <ContactList />
+      <Toaster />
+    </Layout>
   );
-};
+}

@@ -1,32 +1,46 @@
 import { useId } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import toast from 'react-hot-toast';
 import * as Yup from 'yup';
-import { nanoid } from 'https://cdn.jsdelivr.net/npm/nanoid/nanoid.js';
-
 import css from './ContactForm.module.css';
+import Button from '../Button/Button';
+import { addContacts, getContacts } from '../../redux/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ContactFormSchema = Yup.object().shape({
   name: Yup.string()
-    .min(3, 'Too short! Please enter at least 3 characters')
+    .min(3, 'Too short!')
     .max(50, 'Too long!')
-    .required('Required field'),
+    .required('Required'),
   number: Yup.string()
-    .min(3, 'Too short! Please enter at least 3 characters')
+    .min(3, 'Too short!')
     .max(50, 'Too long')
-    .required('Required field'),
+    .required('Required'),
 });
 
 const initialValues = { name: '', number: '' };
 
-export const ContactForm = ({ onAdd }) => {
+export default function ContactForm() {
+  const dispatch = useDispatch();
   const nameFieldId = useId();
   const phoneFieldId = useId();
+  const contacts = useSelector(getContacts);
 
   const handleSaubmit = (values, action) => {
-    onAdd({
-      ...values,
-      id: nanoid(3),
-    });
+    const existingContact = contacts.find(
+      contact =>
+        contact.name.toLowerCase() === values.name.toLowerCase() ||
+        contact.number === values.number
+    );
+
+    if (existingContact) {
+      toast.error('This contact already exists.');
+      return;
+    }
+
+    dispatch(addContacts(values));
+
+    toast.success('Contact added successfully!');
     action.resetForm();
   };
 
@@ -42,7 +56,7 @@ export const ContactForm = ({ onAdd }) => {
             Name
           </label>
           <Field className={css.input} type="text" name="name" />
-          <ErrorMessage name="name" as="span" />
+          <ErrorMessage className={css.errorMsg} name="name" component="span" />
         </div>
 
         <div>
@@ -50,13 +64,17 @@ export const ContactForm = ({ onAdd }) => {
             Number
           </label>
           <Field className={css.input} type="tel" name="number" />
-          <ErrorMessage name="number" as="span" />
+          <ErrorMessage
+            className={css.errorMsg}
+            name="number"
+            component="span"
+          />
         </div>
 
-        <button className={css.button} type="submit">
+        <Button className={css.button} type="submit">
           Add contact
-        </button>
+        </Button>
       </Form>
     </Formik>
   );
-};
+}
